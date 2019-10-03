@@ -19,11 +19,6 @@ class App extends React.Component {
     this.handlePaginateClick = this.handlePaginateClick.bind(this);
   }
 
-  componentDidMount() {
-    this.getEventsByPaginate();
-
-  }
-
   getEventsBySearchTerm(searchTerm) {
     axios.get(`/events?q=${searchTerm}`)
       .then((response) => {
@@ -32,14 +27,14 @@ class App extends React.Component {
         const { resultsPerPage } = this.state;
         const pageCount = Math.ceil(totalResults / resultsPerPage);
         this.setState({ pageCount, searchTerm });
-        this.getEventsByPaginate(searchTerm, 1);
+        this.getEventsByPaginate(searchTerm);
       })
       .catch((error) => {
         console.log(error);
       });
   }
 
-  getEventsByPaginate(searchTerm, page) {
+  getEventsByPaginate(searchTerm) {
     const { currentPage } = this.state;
     axios.get(`/events?_page=${currentPage}&q=${searchTerm}`)
       .then((response) => {
@@ -63,7 +58,6 @@ class App extends React.Component {
       <div>
         <div>Hello World</div>
         <Search getEventsBySearchTerm={this.getEventsBySearchTerm} />
-        <Results results={data}/>
         <div className="test">
           <ReactPaginate
             previousLabel={'previous'}
@@ -77,6 +71,7 @@ class App extends React.Component {
             pageClassName="page-container"
           />
         </div>
+        <Results results={data}/>
       </div>
     )
   }

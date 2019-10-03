@@ -17,7 +17,6 @@ class Search extends React.Component {
     if (searchTerm.length) {
       getEventsBySearchTerm(searchTerm);
       this.setState({ searchTerm: '' });
-      e.target.reset();
     } else {
       // inform user they need to input a search term
     }
@@ -31,7 +30,7 @@ class Search extends React.Component {
   render() {
     return (
       <form onSubmit={this.handleOnSubmit}>
-        <input type="text" placeholder="Historical search" onChange={this.onSearchChange}></input>
+        <input type="text" placeholder="Historical search" value={this.state.searchTerm} onChange={this.onSearchChange}></input>
         <input type="submit"></input>
       </form>
     )
