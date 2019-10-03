@@ -1,8 +1,14 @@
 import React from 'react';
+import Result from './Result';
 
 const Results = (props) => {
+  const { results } = props;
   return (
-    <div>I'm results!</div>
+    <div>
+      {results.map((result, index) => {
+        return <Result key={index} result={result} />
+      })}
+    </div>
   )
 }
 
