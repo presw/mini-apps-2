@@ -12,6 +12,15 @@ class Search extends React.Component {
 
   handleOnSubmit(e) {
     e.preventDefault();
+    const { getEventsBySearchTerm } = this.props;
+    const { searchTerm } = this.state;
+    if (searchTerm.length) {
+      getEventsBySearchTerm(searchTerm);
+      this.setState({ searchTerm: '' });
+      e.target.reset();
+    } else {
+      // inform user they need to input a search term
+    }
   }
   
   onSearchChange(e) {
