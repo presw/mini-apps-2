@@ -8,61 +8,75 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      searchTerm: '',
       data: [],
+      currentPage: 1,
       resultsPerPage: 10,
+      pageCount: 0,
     };
-    this.getEvents = this.getEvents.bind(this);
     this.getEventsBySearchTerm = this.getEventsBySearchTerm.bind(this);
-    this.getEventsByPaginateTest = this.getEventsByPaginateTest.bind(this);
+    this.getEventsByPaginate = this.getEventsByPaginate.bind(this);
     this.handlePaginateClick = this.handlePaginateClick.bind(this);
   }
 
   componentDidMount() {
-    this.getEventsByPaginateTest();
-  }
+    this.getEventsByPaginate();
 
-  getEvents() {
-    axios.get('/events')
-      .then((response) => {
-        const { selected } = response;
-        console.log(response);
-      })
   }
 
   getEventsBySearchTerm(searchTerm) {
     axios.get(`/events?q=${searchTerm}`)
       .then((response) => {
         const { data } = response;
-        console.log(data);
+        const totalResults = data.length;
+        const { resultsPerPage } = this.state;
+        const pageCount = Math.ceil(totalResults / resultsPerPage);
+        this.setState({ pageCount, searchTerm });
+        this.getEventsByPaginate(searchTerm, 1);
       })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
-  getEventsByPaginateTest() {
-    axios.get('/events/?_page=1')
+  getEventsByPaginate(searchTerm, page) {
+    const { currentPage } = this.state;
+    axios.get(`/events?_page=${currentPage}&q=${searchTerm}`)
       .then((response) => {
-        console.log(response.data);
+        const { data } = response;
+        this.setState({ data })
       })
   };
 
   handlePaginateClick(data) {
-    console.log(data);
+    const { searchTerm } = this.state;
+    const { selected } = data;
+    const currentPage = selected + 1;
+    this.setState({ currentPage }, () => {
+      this.getEventsByPaginate(searchTerm, currentPage);
+    })
   }
 
   render() {
+    const { data, pageCount } = this.state;
     return (
       <div>
         <div>Hello World</div>
-        <Search />
-        <Results />
-        <ReactPaginate
-          previousLabel={'previous'}
-          nextLabel={'next'}
-          breakLabel={'...'}
-          pageCount={this.state.pageCount}
-          marginPagesDisplayed={2}
-          pageRangeDisplayed={5}
-          onPageChange={this.handlePaginateClick}
+        <Search getEventsBySearchTerm={this.getEventsBySearchTerm} />
+        <Results results={data}/>
+        <div className="test">
+          <ReactPaginate
+            previousLabel={'previous'}
+            nextLabel={'next'}
+            breakLabel={'...'}
+            pageCount={pageCount}
+            marginPagesDisplayed={2}
+            pageRangeDisplayed={5}
+            onPageChange={this.handlePaginateClick}
+            containerClassName="pagination-container"
+            pageClassName="page-container"
           />
+        </div>
       </div>
     )
   }
