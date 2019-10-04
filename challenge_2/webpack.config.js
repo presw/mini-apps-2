@@ -9,7 +9,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
+        test: /\.(jsx|js)$/,
         include: [
           path.resolve(__dirname, 'client'),
         ],
